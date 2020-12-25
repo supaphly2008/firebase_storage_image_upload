@@ -26,23 +26,29 @@ const ImageGrid = (props) => {
 
   const onImageClick = (url) => {
     const desertRef = firebaseApp.storage().refFromURL(url);
-    desertRef
-      .delete()
-      .then(() => {
-        Swal.fire({
-          title: "Do you want to delete this image?",
-          showDenyButton: false,
-          showCancelButton: true,
-          confirmButtonText: `Delete`,
-        }).then((result) => {
-          if (result.isConfirmed) {
+
+    Swal.fire({
+      title: "Do you want to delete this image?",
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: `Delete`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        desertRef
+          .delete()
+          .then(() => {
             Swal.fire("Image deleted!", "", "success");
-          }
-        });
-      })
-      .catch((err) => {
-        console.error("image delete error", err);
-      });
+          })
+          .catch((err) => {
+            console.error("image delete error", err);
+            Swal.fire({
+              icon: "error",
+              title: "oops...",
+              text: "Looks like something went wrong!",
+            });
+          });
+      }
+    });
   };
 
   return (
