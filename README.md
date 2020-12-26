@@ -1,3 +1,18 @@
+# Firebase setup
+
+Create a Firebase project and get the configuration info
+
+Create a `.env` file in the root directory
+Save the cofiguration info in the `.env` file as follows:
+```
+REACT_APP_FIREBASE_API_KEY = "API KEY"
+REACT_APP_FIREBASE_AUTH_DOMAIN = "AUTH DOMAIN"
+REACT_APP_FIREBASE_PROJECT_ID = "PROJECT ID"
+REACT_APP_FIREBASE_STORAGE_BUCKET = "STORAGE BUCKET"
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID = "SENDER ID"
+REACT_APP_FIREBASE_APP_ID = "APP ID"
+```
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
