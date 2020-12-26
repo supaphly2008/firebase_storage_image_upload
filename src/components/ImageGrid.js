@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Swal from "sweetalert2";
-import firebaseApp from "../firebase/firebase";
+import useFirestore from "../hooks/useFirestore";
 
 const ImageContainer = styled.div`
   display: flex;
@@ -14,6 +13,9 @@ const Img = styled.img`
   width: 200px;
   height: 200px;
   object-fit: cover;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 
   @media screen and (max-width: 480px) {
     width: 100%;
@@ -21,41 +23,14 @@ const Img = styled.img`
   }
 `;
 
-const ImageGrid = (props) => {
-  const { imageUrl } = props;
-
-  const onImageClick = (url) => {
-    const desertRef = firebaseApp.storage().refFromURL(url);
-
-    Swal.fire({
-      title: "Do you want to delete this image?",
-      showDenyButton: false,
-      showCancelButton: true,
-      confirmButtonText: `Delete`,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        desertRef
-          .delete()
-          .then(() => {
-            Swal.fire("Image deleted!", "", "success");
-          })
-          .catch((err) => {
-            console.error("image delete error", err);
-            Swal.fire({
-              icon: "error",
-              title: "oops...",
-              text: "Looks like something went wrong!",
-            });
-          });
-      }
-    });
-  };
+const ImageGrid = () => {
+  const { docs } = useFirestore("images");
 
   return (
     <ImageContainer>
-      {imageUrl.map((url, index) => {
-        return <Img loading="lazy" src={url} key={index} onDoubleClick={() => onImageClick(url)} />;
-      })}
+      {docs.map((doc) => (
+        <Img key={doc.id} src={doc.url} />
+      ))}
     </ImageContainer>
   );
 };

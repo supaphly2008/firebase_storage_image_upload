@@ -1,62 +1,71 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Swal from "sweetalert2";
-import firebaseApp from "../firebase/firebase";
+import ProgressBar from "../components/ProgressBar";
 
-const ImageUploadContainer = styled.div`
-  position: sticky;
-  top: 0;
-  background-color: #01bf71;
-  display: flex;
-  flex-direction: column;
-  height: 80px;
-  justify-content: center;
-  align-items: center;
+const ImageUploadContainer = styled.form`
+  margin: 30px auto 10px;
+  text-align: center;
 `;
 
-const Progress = styled.progress`
-  width: 50%;
-  margin-bottom: 10px;
+const Label = styled.label`
+  display: block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #01bf71;
+  border-radius: 50%;
+  margin: 10px auto;
+  line-height: 30px;
+  color: #01bf71;
+  font-weight: bold;
+  font-size: 24px;
+  cursor: pointer;
+  &:hover {
+    background-color: #01bf71;
+    color: #fff;
+  }
+`;
+
+const Input = styled.input`
+  height: 0;
+  width: 0;
+  opacity: 0;
+`;
+
+const Output = styled.div`
+  height: 60px;
+  font-size: 0.8rem;
 `;
 
 const ImageUpload = () => {
-  const [progress, setProgress] = useState(0);
-  const onInputChange = (e) => {
-    const file = e.target.files[0];
-    const storageRef = firebaseApp.storage().ref("hair_gallery/" + file.name);
-    const task = storageRef.put(file);
+  const [file, setFile] = useState(null);
 
-    task.on(
-      "state_changed",
-      function progress(snapshot) {
-        const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(percentage);
-      },
-      function error(err) {
-        Swal.fire({
-          icon: "error",
-          title: "oops...",
-          text: "Looks like something went wrong!",
-        });
-        setProgress(0);
-      },
-      function conplete(complete) {
-        Swal.fire({
-          icon: "success",
-          title: "Thanks",
-          text: "Your image has been uploaded!",
-        });
-        setProgress(0);
-      }
-    );
+  const fileTypes = ["image/png", "image/jpeg"];
+
+  const onInputChange = (e) => {
+    let selected = e.target.files[0];
+    if (selected && fileTypes.includes(selected.type)) {
+      setFile(selected);
+    } else {
+      setFile(null);
+      Swal.fire({
+        icon: "error",
+        title: "Sorry...",
+        text: "please select an image file",
+      });
+    }
   };
 
   return (
     <ImageUploadContainer>
-      <Progress value={progress} max="100">
-        0%
-      </Progress>
-      <input type="file" onChange={onInputChange} />
+      <Label>
+        <Input type="file" onChange={onInputChange} />
+        <span>+</span>
+      </Label>
+      <Output>
+        {file && <div>{file.name}</div>}
+        {file && <ProgressBar file={file} setFile={setFile} />}
+      </Output>
     </ImageUploadContainer>
   );
 };
